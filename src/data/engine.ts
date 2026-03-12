@@ -29,8 +29,6 @@ export function simulateMatchup(team1: Team, team2: Team): { winner: Team; prob1
   const winProb = seedStats[key] ?? 0.5; // Prob of higher seed beating lower seed
   
   const rng = Math.random();
-  const higherSeedTeam = team1.seed === higherSeed ? team1 : team2;
-  const lowerSeedTeam = team1.seed === lowerSeed ? team1 : team2;
 
   let winner: Team;
   let prob1: number; // Probability of team1 winning
