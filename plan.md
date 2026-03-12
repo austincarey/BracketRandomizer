@@ -96,10 +96,11 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
 - [x] **Core Logic**
   - [x] Implement simulation engine.
 - [ ] **Frontend**
-  - [ ] Design bracket layout.
+  - [x] Design bracket layout (Traditional Left-Right).
   - [x] Implement "Randomize" button.
   - [x] Implement Export to Image/PDF with watermark.
-  - [x] Add Patreon link.
+  - [x] Add seed win percentages to matchups.
+  - [ ] Add real Patreon link.
 - [ ] **Deployment**
   - [ ] Deploy initial site to Cloudflare Pages.
   - [ ] Update with real teams when available (March 2026).
