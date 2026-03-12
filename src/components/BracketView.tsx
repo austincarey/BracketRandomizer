@@ -92,16 +92,20 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
 
   return (
     <div className="flex flex-col items-center gap-6 w-full pb-10">
-      <div className="flex gap-4">
-        <button onClick={exportAsImage} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20">
+      <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
+        <button onClick={exportAsImage} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 sm:py-2 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20 text-sm sm:text-base">
           Export PNG
         </button>
-        <button onClick={exportAsPDF} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-bold transition-all shadow-lg shadow-green-500/20">
+        <button onClick={exportAsPDF} className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 sm:py-2 rounded-full font-bold transition-all shadow-lg shadow-green-500/20 text-sm sm:text-base">
           Export PDF
         </button>
       </div>
 
-      <div ref={bracketRef} className="p-8 bg-gray-900 border border-gray-800 rounded-[2rem] min-w-max relative shadow-2xl overflow-hidden">
+      <div className="md:hidden text-gray-500 text-[10px] uppercase tracking-widest animate-pulse">
+        ← Swipe to view full bracket →
+      </div>
+
+      <div ref={bracketRef} className="p-4 md:p-8 bg-gray-900 border border-gray-800 rounded-[1.5rem] md:rounded-[2rem] min-w-max relative shadow-2xl overflow-hidden">
         {/* Background Watermark */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none rotate-[-15deg]">
           <p className="text-[12rem] font-black text-white whitespace-nowrap">
