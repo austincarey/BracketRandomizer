@@ -30,6 +30,7 @@ The **Bracket Randomizer** is a web-based application designed to create statist
 
 ## Development Conventions
 
+- **Shell Environment:** This project is typically developed in **Windows PowerShell**. Ensure shell commands use PowerShell syntax (e.g., use `;` instead of `&&` for command chaining).
 - **Planning:** Maintain a `plan.md` file to track infrastructure setup, data scripts, and UI progress.
 - **Tracking:** Use the `plan.md` to keep a live TODO list, noting completed items and upcoming tasks.
 - **Branding:** All exported brackets must include a `bracketrandomizer.com` watermark.
