@@ -12,7 +12,7 @@ The **Bracket Randomizer** is a web-based application designed to create statist
 - **Dynamic 2026 Data:** Incorporate actual 2026 tournament teams once they are announced.
 - **Visual & Interactive UI:** A landing page featuring an empty bracket that fills dynamically upon clicking a "Randomize Bracket" button.
 - **Exportability:** Generate a watermark-protected image or PDF of the completed bracket.
-- **Monetization:** Include a Patreon link for donations.
+- **Monetization:** Include a Ko-fi link for donations.
 
 ### Intended Architecture:
 - **Frontend:** Likely a modern web framework (React, Vue, or Vanilla JS) to handle the bracket visualization.

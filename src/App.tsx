@@ -20,12 +20,12 @@ function App() {
         </h1>
         <div className="flex gap-4">
           <a
-            href="https://www.patreon.com"
+            href="https://ko-fi.com/austincarey"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-orange-600 hover:bg-orange-700 px-6 py-2 rounded-full font-semibold transition-colors text-sm md:text-base"
+            className="bg-[#29abe2] hover:bg-[#1f8fb5] px-6 py-2 rounded-full font-semibold transition-colors text-sm md:text-base"
           >
-            Support on Patreon
+            Support on Ko-fi
           </a>
         </div>
       </header>

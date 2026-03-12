@@ -56,7 +56,7 @@ To create a statistically correct March Madness bracket randomizer for the 2026 
 - **Export Functionality:**
   - Save as Image (PNG/JPG) or PDF.
   - **Watermark:** Must include `bracketrandomizer.com` watermark.
-- **Patreon Link:** Visible button for donations.
+- **Ko-fi Link:** Visible button for donations.
 
 ### Tech Stack Recommendation
 - **Frontend:** React with Tailwind CSS for rapid UI development and bracket layout.
@@ -78,9 +78,9 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
 
 ---
 
-## 6. Patreon Integration
-- **Account:** Create at `patreon.com`.
-- **Button:** Add a Patreon branded button to the header or footer of the website.
+## 6. Ko-fi Integration
+- **Account:** Created at `ko-fi.com/austincarey`.
+- **Button:** Add a Ko-fi branded button to the header or footer of the website.
 
 ---
 
@@ -100,7 +100,7 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
   - [x] Implement "Randomize" button.
   - [x] Implement Export to Image/PDF with watermark.
   - [x] Add seed win percentages to matchups.
-  - [ ] Add real Patreon link.
+  - [ ] Add real Ko-fi link.
 - [ ] **Deployment**
   - [ ] Deploy initial site to Cloudflare Pages.
   - [ ] Update with real teams when available (March 2026).
