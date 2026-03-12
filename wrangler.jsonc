@@ -8,5 +8,9 @@
   "assets": {
     "directory": "dist",
     "not_found_handling": "single-page-application"
-  }
+  },
+  "routes": [
+    { "pattern": "bracketrandomizer.com", "custom_domain": true },
+    { "pattern": "www.bracketrandomizer.com", "custom_domain": true }
+  ]
 }
