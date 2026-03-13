@@ -37,7 +37,7 @@ function App() {
           </p>
           <button
             onClick={handleRandomize}
-            className="bg-white text-gray-900 hover:bg-gray-200 px-6 py-3 md:px-8 md:py-4 rounded-xl text-xl md:text-2xl font-bold transition-transform active:scale-95 shadow-lg shadow-white/10 w-full md:w-auto"
+            className="bg-white text-gray-900 hover:bg-gray-200 px-6 py-3 md:px-8 md:py-4 rounded-xl text-xl md:text-2xl font-bold transition-transform active:scale-95 shadow-lg shadow-white/10 w-full max-w-sm md:max-w-none md:w-auto mx-auto"
           >
             {rounds.length > 0 ? 'Randomize Again' : 'Randomize Bracket'}
           </button>

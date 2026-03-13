@@ -45,6 +45,9 @@ To create a statistically correct March Madness bracket randomizer for the 2026 
   2. Generate a random number between 1-100.
   3. If `random_number < win_%_A`, A wins. Otherwise, B wins.
 - **Rounds:** Simulate from Play-In/Round of 64 through to the Championship.
+- **Interactive Mode (Planned):**
+  - **Round-by-Round Randomizer:** Allow users to randomize one round at a time (e.g., randomize only the Round of 64, then view results before randomizing the Round of 32).
+  - **Manual Overrides:** Potential to let users pick specific winners and randomize the rest.
 
 ---
 
@@ -53,6 +56,7 @@ To create a statistically correct March Madness bracket randomizer for the 2026 
 ### Landing Page Features
 - **Empty Bracket:** A visual representation of the tournament bracket.
 - **"Randomize Bracket" Button:** Triggers the simulation and populates the bracket.
+- **"Randomize Next Round" Button (Planned):** Progressively fills the bracket.
 - **Export Functionality:**
   - Save as Image (PNG/JPG) or PDF.
   - **Watermark:** Must include `bracketrandomizer.com` watermark.
@@ -61,6 +65,9 @@ To create a statistically correct March Madness bracket randomizer for the 2026 
 ### Tech Stack Recommendation
 - **Frontend:** React with Tailwind CSS for rapid UI development and bracket layout.
 - **Exporting:** `html-to-image` or `jspdf` for generating the bracket files.
+- **Responsiveness:** 
+  - Desktop: Full 4-region layout.
+  - Mobile: Horizontal swipe-to-view container with navigation hints.
 
 ---
 
