@@ -114,12 +114,15 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
   - [x] Update UI to support "Step-by-Step" randomization.
   - [x] Add "Reset" functionality to clear the bracket.
   - [x] Implement Game-by-Game simulation mode.
-  - [x] **New: Social & Analysis Features**
-    - [x] Chaos Score calculation and display.
-    - [x] Bulk Simulation (1000x) with statistical overlays.
-    - [x] Shareable bracket URLs (Base64 encoding).
-    - [x] Enhanced Path Highlighting and Live Odds.
-- [ ] **Deployment**
+  - [x] **New: Advanced Features & Polish**
+    - [x] Chaos Score calculation and display with verdict labels.
+    - [x] Bulk Simulation (1000x) with statistical overlays on matchups.
+    - [x] Shareable bracket URLs using Base64 bitstring encoding.
+    - [x] Enhanced Path Highlighting on hover.
+    - [x] Live Odds display for every matchup.
+    - [x] Manual Override propagation (Click a loser to make them the winner).
+    - [x] Custom BRACKETRANDOMIZER.COM watermark in middle of bracket.
+- [ ] **Final Deployment Phase**
   - [x] Deploy initial site to Cloudflare.
   - [ ] Update with real teams when available (March 15, 2026).
 
