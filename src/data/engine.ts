@@ -193,12 +193,8 @@ export function propagateOverride(rounds: Round[], roundIdx: number, matchupIdx:
   let currentNewTeam = newWinner;
 
   for (let r = roundIdx + 1; r < newRounds.length; r++) {
-    const prevRoundMatchups = newRounds[r - 1].matchups;
     const currentRoundMatchups = newRounds[r].matchups;
 
-    // Each game in round R is formed by winners of two specific games in round R-1
-    // Game i in round R is winners of game 2i and 2i+1 in round R-1
-    const nextMatchupIdx = Math.floor(matchupIdx / Math.pow(2, r - roundIdx));
     // Wait, simpler: just find where the old team was in the next round
     const affectedMatchup = currentRoundMatchups.find(m => 
       m.team1.name === currentOldTeam.name || m.team2.name === currentOldTeam.name

@@ -161,7 +161,7 @@ function App() {
     }
   };
 
-  const isComplete = rounds.length === ROUND_NAMES.length && rounds[5].matchups[0].winner;
+  const isComplete = rounds.length === ROUND_NAMES.length && !!rounds[5].matchups[0].winner;
 
   useEffect(() => {
     if (isComplete) {
