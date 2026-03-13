@@ -126,7 +126,7 @@ function App() {
             rel="noopener noreferrer"
             className="bg-[#29abe2] hover:bg-[#1f8fb5] px-6 py-2 rounded-full font-semibold transition-colors text-sm md:text-base"
           >
-            Support on Ko-fi
+            Donate to this Site
           </a>
         </div>
       </header>
