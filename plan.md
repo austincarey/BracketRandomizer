@@ -93,21 +93,27 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
 
 ## TODO List
 
-- [ ] **Infrastructure**
+- [x] **Infrastructure**
   - [x] Initialize Git repo.
-  - [ ] Purchase `bracketrandomizer.com` on Cloudflare.
-  - [ ] Connect GitHub repo to Cloudflare Pages.
+  - [x] Configure `bracketrandomizer.com` in Wrangler.
+  - [x] Connect and deploy to Cloudflare.
 - [x] **Data**
   - [x] Script to scrape `mcubed.net` seed stats.
   - [x] Create placeholder for 2026 teams.
 - [x] **Core Logic**
   - [x] Implement simulation engine.
-- [ ] **Frontend**
+- [x] **Frontend**
   - [x] Design bracket layout (Traditional Left-Right).
   - [x] Implement "Randomize" button.
   - [x] Implement Export to Image/PDF with watermark.
   - [x] Add seed win percentages to matchups.
-  - [ ] Add real Ko-fi link.
+  - [x] Add real Ko-fi link.
+  - [x] Mobile-friendly responsive layout & horizontal swipe.
+- [x] **Next Phase: Interactive Features**
+  - [x] Implement Round-by-Round simulation logic.
+  - [x] Update UI to support "Step-by-Step" randomization.
+  - [x] Add "Reset" functionality to clear the bracket.
+  - [x] Implement Game-by-Game simulation mode.
 - [ ] **Deployment**
-  - [ ] Deploy initial site to Cloudflare Pages.
-  - [ ] Update with real teams when available (March 2026).
+  - [x] Deploy initial site to Cloudflare.
+  - [ ] Update with real teams when available (March 15, 2026).

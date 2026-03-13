@@ -19,16 +19,21 @@
     "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/ui": "^4.1.0",
     "autoprefixer": "^10.4.19",
+    "jsdom": "^28.1.0",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.2.2",
     "vite": "^6.4.1",
+    "vitest": "^4.1.0",
     "wrangler": "^4.72.0"
   }
 }
