@@ -126,13 +126,6 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
       </div>
 
       <div ref={bracketRef} className="p-4 md:p-8 bg-gray-900 border border-gray-800 rounded-[1.5rem] md:rounded-[2rem] min-w-max relative shadow-2xl overflow-hidden">
-        {/* Background Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none rotate-[-15deg]">
-          <p className="text-[12rem] font-black text-white whitespace-nowrap">
-            BRACKET RANDOMIZER
-          </p>
-        </div>
-
         <div className="relative z-10 flex items-center gap-10">
           <div className="flex flex-col gap-8">
             <RegionSection regionIndex={0} title="East" side="left" />
