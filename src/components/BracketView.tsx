@@ -5,13 +5,16 @@ import { Round, Matchup, ROUND_NAMES } from '../data/engine';
 
 interface BracketViewProps {
   rounds: Round[];
+  bulkResults?: Record<string, number[]> | null;
 }
 
 const MatchupCard: React.FC<{ 
   matchup: Matchup; 
+  roundIdx: number;
   hoveredTeam: string | null; 
-  onHover: (name: string | null) => void 
-}> = ({ matchup, hoveredTeam, onHover }) => {
+  onHover: (name: string | null) => void;
+  bulkResults?: Record<string, number[]> | null;
+}> = ({ matchup, roundIdx, hoveredTeam, onHover, bulkResults }) => {
   const p1 = matchup.winProbability ? Math.round(matchup.winProbability * 100) : (matchup.winner ? (matchup.winner === matchup.team1 ? 100 : 0) : 50);
   const p2 = 100 - p1;
 
@@ -20,6 +23,15 @@ const MatchupCard: React.FC<{
 
   const isT1Hovered = hoveredTeam === matchup.team1.name;
   const isT2Hovered = hoveredTeam === matchup.team2.name;
+
+  const getBulkWinPct = (teamName: string) => {
+    if (!bulkResults || !bulkResults[teamName]) return null;
+    const wins = bulkResults[teamName][roundIdx + 1];
+    return (wins / 10).toFixed(1) + '%';
+  };
+
+  const t1Bulk = getBulkWinPct(matchup.team1.name);
+  const t2Bulk = getBulkWinPct(matchup.team2.name);
 
   return (
     <div className="flex flex-col w-52 border border-slate-300 overflow-hidden bg-white shadow-sm transition-all duration-200">
@@ -34,7 +46,10 @@ const MatchupCard: React.FC<{
           <span className={`text-[10px] font-bold mr-2 w-4 ${isT1Hovered ? 'text-white/80' : 'text-slate-500'}`}>{matchup.team1.seed}</span>
           <span className="truncate text-[11px] uppercase tracking-tight font-semibold">{matchup.team1.name}</span>
         </div>
-        <span className={`text-[9px] font-bold ml-2 ${isT1Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p1}%</span>
+        <div className="flex flex-col items-end">
+          <span className={`text-[9px] font-bold ${isT1Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p1}%</span>
+          {t1Bulk && <span className="text-[7px] font-black text-purple-600">{t1Bulk} sim</span>}
+        </div>
       </div>
       <div 
         onMouseEnter={() => onHover(matchup.team2.name)}
@@ -47,7 +62,10 @@ const MatchupCard: React.FC<{
           <span className={`text-[10px] font-bold mr-2 w-4 ${isT2Hovered ? 'text-white/80' : 'text-slate-500'}`}>{matchup.team2.seed}</span>
           <span className="truncate text-[11px] uppercase tracking-tight font-semibold">{matchup.team2.name}</span>
         </div>
-        <span className={`text-[9px] font-bold ml-2 ${isT2Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p2}%</span>
+        <div className="flex flex-col items-end">
+          <span className={`text-[9px] font-bold ${isT2Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p2}%</span>
+          {t2Bulk && <span className="text-[7px] font-black text-purple-600">{t2Bulk} sim</span>}
+        </div>
       </div>
     </div>
   );
@@ -59,7 +77,7 @@ const PlaceholderCard: React.FC = () => (
   </div>
 );
 
-const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
+const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults }) => {
   const bracketRef = useRef<HTMLDivElement>(null);
   const [hoveredTeam, setHoveredTeam] = React.useState<string | null>(null);
 
@@ -117,8 +135,10 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
                     <MatchupCard 
                       key={mIdx} 
                       matchup={m} 
+                      roundIdx={rIdx}
                       hoveredTeam={hoveredTeam} 
                       onHover={setHoveredTeam} 
+                      bulkResults={bulkResults}
                     />
                   ))
                 ) : (
@@ -169,12 +189,12 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
                </div>
                <div className="flex gap-6">
                  {finalFourMatchups[0] ? (
-                   <MatchupCard matchup={finalFourMatchups[0]} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} />
+                   <MatchupCard matchup={finalFourMatchups[0]} roundIdx={4} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} />
                  ) : (
                    <PlaceholderCard />
                  )}
                  {finalFourMatchups[1] ? (
-                   <MatchupCard matchup={finalFourMatchups[1]} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} />
+                   <MatchupCard matchup={finalFourMatchups[1]} roundIdx={4} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} />
                  ) : (
                    <PlaceholderCard />
                  )}
@@ -186,7 +206,7 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
                     <h3 className="font-black italic uppercase text-[12px] tracking-widest">Championship</h3>
                </div>
                {championshipMatchup ? (
-                 <MatchupCard matchup={championshipMatchup} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} />
+                 <MatchupCard matchup={championshipMatchup} roundIdx={5} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} />
                ) : (
                  <PlaceholderCard />
                )}
@@ -210,6 +230,11 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
                   <div className={`inline-block mt-3 px-3 py-0.5 rounded-full ${hoveredTeam === champion.name ? 'bg-white' : 'bg-[#002d62]'}`}>
                     <p className={`font-mono text-xs font-bold ${hoveredTeam === champion.name ? 'text-red-600' : 'text-white'}`}>SEED #{champion.seed}</p>
                   </div>
+                  {bulkResults && bulkResults[champion.name] && (
+                    <p className={`mt-2 text-[10px] font-black ${hoveredTeam === champion.name ? 'text-white' : 'text-purple-600'}`}>
+                      {(bulkResults[champion.name][6] / 10).toFixed(1)}% SIM CHAMPION
+                    </p>
+                  )}
                 </>
               ) : (
                 <p className="text-xl font-black text-slate-300 uppercase tracking-tighter italic">TBD</p>
@@ -217,7 +242,7 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
             </div>
 
             <div className="mt-6 opacity-30">
-               <p className="text-lg font-black text-[#002d62] tracking-tighter italic">#MARCHMADNESS</p>
+               <p className="text-lg font-black text-[#002d62] tracking-tighter italic">BRACKETRANDOMIZER.COM</p>
             </div>
           </div>
 

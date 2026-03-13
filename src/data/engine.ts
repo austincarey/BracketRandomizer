@@ -137,3 +137,44 @@ export function simulateTournament(initialTeams: Team[], chaosFactor: number = 0
 
   return rounds;
 }
+
+export function calculateChaosScore(rounds: Round[]): number {
+  let totalProbability = 0;
+  let maxMatchups = 0;
+
+  rounds.forEach(round => {
+    round.matchups.forEach(matchup => {
+      if (matchup.winner && matchup.winProbability !== undefined) {
+        const winProb = matchup.winner === matchup.team1 ? matchup.winProbability : (1 - matchup.winProbability);
+        totalProbability += (1 - winProb);
+        maxMatchups++;
+      }
+    });
+  });
+
+  if (maxMatchups === 0) return 0;
+  
+  return Math.round((totalProbability / maxMatchups) * 200); 
+}
+
+export function bulkSimulate(initialTeams: Team[], iterations: number = 100): Record<string, number[]> {
+  const teamResults: Record<string, number[]> = {};
+
+  initialTeams.forEach(team => {
+    teamResults[team.name] = new Array(ROUND_NAMES.length + 1).fill(0);
+  });
+
+  for (let i = 0; i < iterations; i++) {
+    const rounds = simulateTournament(initialTeams);
+    
+    rounds.forEach((round, roundIdx) => {
+      round.matchups.forEach(matchup => {
+        if (matchup.winner) {
+          teamResults[matchup.winner.name][roundIdx + 1]++;
+        }
+      });
+    });
+  }
+
+  return teamResults;
+}

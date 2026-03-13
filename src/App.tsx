@@ -1,32 +1,70 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import confetti from 'canvas-confetti'
 import { 
   generateInitialTeams, 
   simulateTournament, 
   simulateMatchup, 
   getInitialMatchups,
+  calculateChaosScore,
+  bulkSimulate,
   Round, 
   Matchup, 
   ROUND_NAMES 
 } from './data/engine'
+import { encodeBracket, decodeBracket } from './data/share'
 import BracketView from './components/BracketView'
 import './App.css'
 
 function App() {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [chaosFactor, setChaosFactor] = useState(0); // Default to 0 (Historical Accuracy)
+  const [chaosFactor, setChaosFactor] = useState(0); 
+  const [bulkResults, setBulkResults] = useState<Record<string, number[]> | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const initialTeams = useMemo(() => generateInitialTeams(), []);
+
+  // Handle URL parameters for shared brackets
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const bracketCode = params.get('b');
+    if (bracketCode) {
+      try {
+        const decodedRounds = decodeBracket(bracketCode, initialTeams);
+        setRounds(decodedRounds);
+        setIsSimulating(true);
+      } catch (e) {
+        console.error("Failed to decode bracket", e);
+      }
+    }
+  }, [initialTeams]);
 
   const resetBracket = useCallback(() => {
     setRounds([]);
     setIsSimulating(false);
+    setBulkResults(null);
+    window.history.replaceState({}, '', window.location.pathname);
   }, []);
 
   const simulateEntire = () => {
-    const teams = generateInitialTeams();
-    const results = simulateTournament(teams, chaosFactor);
+    const results = simulateTournament(initialTeams, chaosFactor);
     setRounds(results);
     setIsSimulating(true);
+    setBulkResults(null);
+  };
+
+  const runBulkSim = () => {
+    const results = bulkSimulate(initialTeams, 1000);
+    setBulkResults(results);
+  };
+
+  const copyShareLink = async () => {
+    if (rounds.length === 0) return;
+    const code = encodeBracket(rounds);
+    const url = `${window.location.origin}${window.location.pathname}?b=${code}`;
+    await navigator.clipboard.writeText(url);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
   };
 
   const startStepByStep = () => {
@@ -216,7 +254,7 @@ function App() {
           </div>
         ) : (
           <div className="mb-8 flex flex-wrap justify-center gap-4">
-            {!isComplete && (
+            {!isComplete ? (
               <>
                 <button
                   onClick={simulateNextRound}
@@ -231,6 +269,39 @@ function App() {
                   Next Game
                 </button>
               </>
+            ) : (
+              <div className="flex flex-col items-center gap-4 w-full">
+                <div className="flex flex-wrap justify-center gap-4">
+                  <button
+                    onClick={copyShareLink}
+                    className={`${copySuccess ? 'bg-green-600' : 'bg-[#002d62]'} hover:opacity-90 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-md flex items-center gap-2`}
+                  >
+                    {copySuccess ? '✓ Link Copied' : 'Share Bracket'}
+                  </button>
+                  <button
+                    onClick={runBulkSim}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-md"
+                  >
+                    Run 1000x Sim
+                  </button>
+                </div>
+                
+                <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-6">
+                  <div className="text-left">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chaos Score</p>
+                    <p className="text-2xl font-black text-red-600">{calculateChaosScore(rounds)}/100</p>
+                  </div>
+                  <div className="h-8 w-[1px] bg-slate-100"></div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Bracket Verdict</p>
+                    <p className="text-sm font-bold text-slate-600">
+                      {calculateChaosScore(rounds) > 70 ? "Pure Chaos! 🌪️" : 
+                       calculateChaosScore(rounds) > 40 ? "A Healthy Mix 🏀" : 
+                       "Playing it Safe 🛡️"}
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
             <button
               onClick={resetBracket}
@@ -244,7 +315,7 @@ function App() {
         {rounds.length > 0 ? (
           <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide flex justify-center lg:justify-start">
             <div className="inline-block mx-auto min-w-min">
-              <BracketView rounds={rounds} />
+              <BracketView rounds={rounds} bulkResults={bulkResults} />
             </div>
           </div>
         ) : (

@@ -114,6 +114,11 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
   - [x] Update UI to support "Step-by-Step" randomization.
   - [x] Add "Reset" functionality to clear the bracket.
   - [x] Implement Game-by-Game simulation mode.
+  - [x] **New: Social & Analysis Features**
+    - [x] Chaos Score calculation and display.
+    - [x] Bulk Simulation (1000x) with statistical overlays.
+    - [x] Shareable bracket URLs (Base64 encoding).
+    - [x] Enhanced Path Highlighting and Live Odds.
 - [ ] **Deployment**
   - [x] Deploy initial site to Cloudflare.
   - [ ] Update with real teams when available (March 15, 2026).
