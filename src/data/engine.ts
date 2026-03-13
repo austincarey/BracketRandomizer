@@ -36,9 +36,21 @@ export function simulateMatchup(team1: Team, team2: Team, chaosFactor: number = 
   
   const key = `${higherSeed}_vs_${lowerSeed}`;
   let winProb = seedStats[key] ?? 0.5; // Prob of higher seed beating lower seed
+
+  // Apply new chaos factor: 
+  // -1 = 100% Safe (choose historical favorite 100% of the time)
+  //  0 = Historical (use historical winProb)
+  //  1 = 100% Chaos (choose historical underdog 100% of the time)
   
-  // Apply chaos factor: 0 = historical, 1 = pure 50/50
-  winProb = winProb + (0.5 - winProb) * chaosFactor;
+  if (chaosFactor < 0) {
+    // Towards "Safe" - interpolate towards the more likely winner
+    const targetProb = winProb >= 0.5 ? 1.0 : 0.0;
+    winProb = winProb + (targetProb - winProb) * Math.abs(chaosFactor);
+  } else if (chaosFactor > 0) {
+    // Towards "Chaos" - interpolate towards the less likely winner
+    const targetProb = winProb >= 0.5 ? 0.0 : 1.0;
+    winProb = winProb + (targetProb - winProb) * chaosFactor;
+  }
   
   const rng = Math.random();
 

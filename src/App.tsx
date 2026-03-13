@@ -15,7 +15,7 @@ import './App.css'
 function App() {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [chaosFactor, setChaosFactor] = useState(0.1); // Default to 10% chaos
+  const [chaosFactor, setChaosFactor] = useState(0); // Default to 0 (Historical Accuracy)
 
   const resetBracket = useCallback(() => {
     setRounds([]);
@@ -160,30 +160,10 @@ function App() {
       <main className="text-center">
         {!isSimulating ? (
           <div className="mb-12 max-w-7xl mx-auto">
-            <div className="mb-12 bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 max-w-2xl mx-auto">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-sm font-black uppercase tracking-widest text-slate-400">Simulation Chaos</span>
-                <span className="text-2xl font-black text-red-600">{(chaosFactor * 100).toFixed(0)}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={chaosFactor}
-                onChange={(e) => setChaosFactor(parseFloat(e.target.value))}
-                className="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-red-600 mb-4"
-              />
-              <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter text-slate-400">
-                <span>Historical Accuracy</span>
-                <span>Pure Randomness</span>
-              </div>
-            </div>
-
             <p className="text-lg md:text-xl text-slate-500 mb-8 font-medium">
               Choose your simulation mode for the 2026 Tournament.
             </p>
-            <div className="flex flex-col md:flex-row gap-4 justify-center items-stretch max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-4 justify-center items-stretch max-w-4xl mx-auto mb-8">
               <button
                 onClick={simulateEntire}
                 className="flex-1 bg-white text-slate-900 hover:bg-slate-50 border-2 border-slate-200 p-6 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex flex-col items-center gap-2"
@@ -207,6 +187,31 @@ function App() {
                 <span className="text-2xl font-black">Game by Game</span>
                 <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Precision Control</span>
               </button>
+            </div>
+
+            <div className="bg-white rounded-2xl p-4 md:p-6 shadow-md border border-slate-200 max-w-md mx-auto">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chaos Engine</span>
+                <span className="text-xs font-black text-[#002d62] uppercase tracking-tighter">
+                    {chaosFactor === 0 ? 'Historical Accuracy' : 
+                     chaosFactor < 0 ? `Safe (${Math.abs(Math.round(chaosFactor * 100))}%)` : 
+                     `Chaos (${Math.round(chaosFactor * 100)}%)`}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="-1"
+                max="1"
+                step="0.01"
+                value={chaosFactor}
+                onChange={(e) => setChaosFactor(parseFloat(e.target.value))}
+                className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[#002d62] mb-2"
+              />
+              <div className="flex justify-between text-[8px] font-bold uppercase tracking-tighter text-slate-400">
+                <span className={chaosFactor < -0.7 ? 'text-[#002d62]' : ''}>100% Safe</span>
+                <span className={chaosFactor === 0 ? 'text-[#002d62]' : ''}>Balanced</span>
+                <span className={chaosFactor > 0.7 ? 'text-red-600' : ''}>100% Chaos</span>
+              </div>
             </div>
           </div>
         ) : (
@@ -250,7 +255,7 @@ function App() {
       </main>
 
       <footer className="mt-20 py-8 border-t border-slate-200 text-center text-slate-400">
-        <p>&copy; 2026 Austin Carey / BracketRandomizer.com. All rights reserved.</p>
+        <p>&copy; 2026 BracketRandomizer.com. All rights reserved.</p>
       </footer>
     </div>
   )
