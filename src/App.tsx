@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import confetti from 'canvas-confetti'
 import { 
   generateInitialTeams, 
   simulateTournament, 
@@ -14,6 +15,7 @@ import './App.css'
 function App() {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [chaosFactor, setChaosFactor] = useState(0.1); // Default to 10% chaos
 
   const resetBracket = useCallback(() => {
     setRounds([]);
@@ -22,7 +24,7 @@ function App() {
 
   const simulateEntire = () => {
     const teams = generateInitialTeams();
-    const results = simulateTournament(teams);
+    const results = simulateTournament(teams, chaosFactor);
     setRounds(results);
     setIsSimulating(true);
   };
@@ -46,7 +48,7 @@ function App() {
       // Finish current round first
       const newMatchups = currentRound.matchups.map(m => {
         if (m.winner) return m;
-        const { winner, prob1 } = simulateMatchup(m.team1, m.team2);
+        const { winner, prob1 } = simulateMatchup(m.team1, m.team2, chaosFactor);
         return { ...m, winner, winProbability: prob1 };
       });
       const newRounds = [...rounds];
@@ -86,7 +88,7 @@ function App() {
     if (nextMatchupIdx !== -1) {
       // Simulate next game in current round
       const matchup = currentRound.matchups[nextMatchupIdx];
-      const { winner, prob1 } = simulateMatchup(matchup.team1, matchup.team2);
+      const { winner, prob1 } = simulateMatchup(matchup.team1, matchup.team2, chaosFactor);
       const newMatchups = [...currentRound.matchups];
       newMatchups[nextMatchupIdx] = { ...matchup, winner, winProbability: prob1 };
       currentRounds[currentRoundIdx] = { ...currentRound, matchups: newMatchups };
@@ -103,7 +105,7 @@ function App() {
         
         // Simulate first game of next round immediately for better UX
         const firstMatchup = nextRound.matchups[0];
-        const { winner, prob1 } = simulateMatchup(firstMatchup.team1, firstMatchup.team2);
+        const { winner, prob1 } = simulateMatchup(firstMatchup.team1, firstMatchup.team2, chaosFactor);
         nextRound.matchups[0] = { ...firstMatchup, winner, winProbability: prob1 };
         
         setRounds([...currentRounds, nextRound]);
@@ -112,6 +114,30 @@ function App() {
   };
 
   const isComplete = rounds.length === ROUND_NAMES.length && rounds[5].matchups[0].winner;
+
+  useEffect(() => {
+    if (isComplete) {
+      const duration = 5 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+      const interval: any = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      }, 250);
+
+      return () => clearInterval(interval);
+    }
+  }, [isComplete]);
 
   return (
     <div className="min-h-screen bg-[#f1f5f9] text-[#002d62] p-4 md:p-8">
@@ -126,7 +152,7 @@ function App() {
             rel="noopener noreferrer"
             className="bg-[#29abe2] hover:bg-[#1f8fb5] text-white px-6 py-2 rounded-full font-bold transition-all shadow-md text-sm md:text-base"
           >
-            Support on Ko-fi
+            Donate if you like this site
           </a>
         </div>
       </header>
@@ -134,6 +160,26 @@ function App() {
       <main className="text-center">
         {!isSimulating ? (
           <div className="mb-12 max-w-7xl mx-auto">
+            <div className="mb-12 bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 max-w-2xl mx-auto">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-sm font-black uppercase tracking-widest text-slate-400">Simulation Chaos</span>
+                <span className="text-2xl font-black text-red-600">{(chaosFactor * 100).toFixed(0)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={chaosFactor}
+                onChange={(e) => setChaosFactor(parseFloat(e.target.value))}
+                className="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-red-600 mb-4"
+              />
+              <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter text-slate-400">
+                <span>Historical Accuracy</span>
+                <span>Pure Randomness</span>
+              </div>
+            </div>
+
             <p className="text-lg md:text-xl text-slate-500 mb-8 font-medium">
               Choose your simulation mode for the 2026 Tournament.
             </p>
@@ -204,7 +250,7 @@ function App() {
       </main>
 
       <footer className="mt-20 py-8 border-t border-slate-200 text-center text-slate-400">
-        <p>&copy; 2026 BracketRandomizer.com. All rights reserved.</p>
+        <p>&copy; 2026 Austin Carey / BracketRandomizer.com. All rights reserved.</p>
       </footer>
     </div>
   )

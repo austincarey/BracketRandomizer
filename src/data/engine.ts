@@ -30,12 +30,15 @@ export const ROUND_NAMES = [
 const seedStats = seedStatsRaw as Record<string, number>;
 const teams2026 = teams2026Raw as Record<string, Team[]>;
 
-export function simulateMatchup(team1: Team, team2: Team): { winner: Team; prob1: number } {
+export function simulateMatchup(team1: Team, team2: Team, chaosFactor: number = 0): { winner: Team; prob1: number } {
   const higherSeed = Math.min(team1.seed, team2.seed);
   const lowerSeed = Math.max(team1.seed, team2.seed);
   
   const key = `${higherSeed}_vs_${lowerSeed}`;
-  const winProb = seedStats[key] ?? 0.5; // Prob of higher seed beating lower seed
+  let winProb = seedStats[key] ?? 0.5; // Prob of higher seed beating lower seed
+  
+  // Apply chaos factor: 0 = historical, 1 = pure 50/50
+  winProb = winProb + (0.5 - winProb) * chaosFactor;
   
   const rng = Math.random();
 
@@ -87,7 +90,7 @@ export function getInitialMatchups(initialTeams: Team[]): Matchup[] {
   return matchups;
 }
 
-export function simulateTournament(initialTeams: Team[]): Round[] {
+export function simulateTournament(initialTeams: Team[], chaosFactor: number = 0): Round[] {
   const rounds: Round[] = [];
   let currentTeams = [...initialTeams];
 
@@ -103,14 +106,14 @@ export function simulateTournament(initialTeams: Team[]): Round[] {
         for (let i = 0; i < order.length; i += 2) {
           const t1 = regionTeams.find(t => t.seed === order[i])!;
           const t2 = regionTeams.find(t => t.seed === order[i+1])!;
-          const { winner, prob1 } = simulateMatchup(t1, t2);
+          const { winner, prob1 } = simulateMatchup(t1, t2, chaosFactor);
           matchups.push({ team1: t1, team2: t2, winner, winProbability: prob1 });
           nextRoundTeams.push(winner);
         }
       }
     } else {
       for (let i = 0; i < currentTeams.length; i += 2) {
-        const { winner, prob1 } = simulateMatchup(currentTeams[i], currentTeams[i+1]);
+        const { winner, prob1 } = simulateMatchup(currentTeams[i], currentTeams[i+1], chaosFactor);
         matchups.push({ team1: currentTeams[i], team2: currentTeams[i+1], winner, winProbability: prob1 });
         nextRoundTeams.push(winner);
       }

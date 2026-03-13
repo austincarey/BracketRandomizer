@@ -7,28 +7,47 @@ interface BracketViewProps {
   rounds: Round[];
 }
 
-const MatchupCard: React.FC<{ matchup: Matchup }> = ({ matchup }) => {
+const MatchupCard: React.FC<{ 
+  matchup: Matchup; 
+  hoveredTeam: string | null; 
+  onHover: (name: string | null) => void 
+}> = ({ matchup, hoveredTeam, onHover }) => {
   const p1 = matchup.winProbability ? Math.round(matchup.winProbability * 100) : (matchup.winner ? (matchup.winner === matchup.team1 ? 100 : 0) : 50);
   const p2 = 100 - p1;
 
   const isT1Winner = matchup.winner === matchup.team1;
   const isT2Winner = matchup.winner === matchup.team2;
 
+  const isT1Hovered = hoveredTeam === matchup.team1.name;
+  const isT2Hovered = hoveredTeam === matchup.team2.name;
+
   return (
-    <div className="flex flex-col w-52 border border-slate-300 overflow-hidden bg-white shadow-sm">
-      <div className={`px-3 py-1.5 border-b border-slate-200 flex justify-between items-center ${isT1Winner ? 'bg-slate-100 font-bold' : (matchup.winner ? 'text-slate-400' : 'text-slate-800')}`}>
+    <div className="flex flex-col w-52 border border-slate-300 overflow-hidden bg-white shadow-sm transition-all duration-200">
+      <div 
+        onMouseEnter={() => onHover(matchup.team1.name)}
+        onMouseLeave={() => onHover(null)}
+        className={`px-3 py-1.5 border-b border-slate-200 flex justify-between items-center cursor-default transition-colors ${
+          isT1Hovered ? 'bg-red-600 text-white' : (isT1Winner ? 'bg-slate-100 font-bold' : (matchup.winner ? 'text-slate-400' : 'text-slate-800'))
+        }`}
+      >
         <div className="flex items-center flex-1 truncate">
-          <span className="text-[10px] font-bold text-slate-500 mr-2 w-4">{matchup.team1.seed}</span>
+          <span className={`text-[10px] font-bold mr-2 w-4 ${isT1Hovered ? 'text-white/80' : 'text-slate-500'}`}>{matchup.team1.seed}</span>
           <span className="truncate text-[11px] uppercase tracking-tight font-semibold">{matchup.team1.name}</span>
         </div>
-        <span className="text-[9px] font-bold text-slate-400 ml-2">{p1}%</span>
+        <span className={`text-[9px] font-bold ml-2 ${isT1Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p1}%</span>
       </div>
-      <div className={`px-3 py-1.5 flex justify-between items-center ${isT2Winner ? 'bg-slate-100 font-bold' : (matchup.winner ? 'text-slate-400' : 'text-slate-800')}`}>
+      <div 
+        onMouseEnter={() => onHover(matchup.team2.name)}
+        onMouseLeave={() => onHover(null)}
+        className={`px-3 py-1.5 flex justify-between items-center cursor-default transition-colors ${
+          isT2Hovered ? 'bg-red-600 text-white' : (isT2Winner ? 'bg-slate-100 font-bold' : (matchup.winner ? 'text-slate-400' : 'text-slate-800'))
+        }`}
+      >
         <div className="flex items-center flex-1 truncate">
-          <span className="text-[10px] font-bold text-slate-500 mr-2 w-4">{matchup.team2.seed}</span>
+          <span className={`text-[10px] font-bold mr-2 w-4 ${isT2Hovered ? 'text-white/80' : 'text-slate-500'}`}>{matchup.team2.seed}</span>
           <span className="truncate text-[11px] uppercase tracking-tight font-semibold">{matchup.team2.name}</span>
         </div>
-        <span className="text-[9px] font-bold text-slate-400 ml-2">{p2}%</span>
+        <span className={`text-[9px] font-bold ml-2 ${isT2Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p2}%</span>
       </div>
     </div>
   );
@@ -42,6 +61,7 @@ const PlaceholderCard: React.FC = () => (
 
 const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
   const bracketRef = useRef<HTMLDivElement>(null);
+  const [hoveredTeam, setHoveredTeam] = React.useState<string | null>(null);
 
   const exportAsImage = async () => {
     if (!bracketRef.current) return;
@@ -93,7 +113,14 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
               </span>
               <div className="flex flex-col justify-around h-full gap-2">
                 {matchups.length > 0 ? (
-                  matchups.map((m, mIdx) => <MatchupCard key={mIdx} matchup={m} />)
+                  matchups.map((m, mIdx) => (
+                    <MatchupCard 
+                      key={mIdx} 
+                      matchup={m} 
+                      hoveredTeam={hoveredTeam} 
+                      onHover={setHoveredTeam} 
+                    />
+                  ))
                 ) : (
                   Array.from({ length: expectedCount }).map((_, i) => <PlaceholderCard key={i} />)
                 )}
@@ -141,8 +168,16 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
                     <h3 className="font-black italic uppercase text-[10px] tracking-widest">Final Four</h3>
                </div>
                <div className="flex gap-6">
-                 {finalFourMatchups[0] ? <MatchupCard matchup={finalFourMatchups[0]} /> : <PlaceholderCard />}
-                 {finalFourMatchups[1] ? <MatchupCard matchup={finalFourMatchups[1]} /> : <PlaceholderCard />}
+                 {finalFourMatchups[0] ? (
+                   <MatchupCard matchup={finalFourMatchups[0]} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} />
+                 ) : (
+                   <PlaceholderCard />
+                 )}
+                 {finalFourMatchups[1] ? (
+                   <MatchupCard matchup={finalFourMatchups[1]} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} />
+                 ) : (
+                   <PlaceholderCard />
+                 )}
                </div>
             </div>
 
@@ -150,18 +185,30 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds }) => {
                <div className="bg-red-600 text-white px-6 py-1 mb-4 inline-block transform -skew-x-12">
                     <h3 className="font-black italic uppercase text-[12px] tracking-widest">Championship</h3>
                </div>
-               {championshipMatchup ? <MatchupCard matchup={championshipMatchup} /> : <PlaceholderCard />}
+               {championshipMatchup ? (
+                 <MatchupCard matchup={championshipMatchup} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} />
+               ) : (
+                 <PlaceholderCard />
+               )}
             </div>
 
-            <div className={`w-72 p-8 rounded-xl shadow-xl text-center border-2 transition-all duration-500 ${champion ? 'bg-white border-[#002d62]' : 'bg-slate-50 border-slate-200 opacity-50'}`}>
-              <p className="text-[#002d62] uppercase text-[10px] font-black tracking-widest mb-2">2026 National Champion</p>
+            <div 
+              onMouseEnter={() => champion && setHoveredTeam(champion.name)}
+              onMouseLeave={() => setHoveredTeam(null)}
+              className={`w-72 p-8 rounded-xl shadow-xl text-center border-2 transition-all duration-500 cursor-default ${
+                champion ? (hoveredTeam === champion.name ? 'bg-red-600 border-red-600' : 'bg-white border-[#002d62]') : 'bg-slate-50 border-slate-200 opacity-50'
+              }`}
+            >
+              <p className={`uppercase text-[10px] font-black tracking-widest mb-2 ${hoveredTeam === champion?.name ? 'text-white/80' : 'text-[#002d62]'}`}>
+                2026 National Champion
+              </p>
               {champion ? (
                 <>
-                  <p className="text-3xl font-black text-[#002d62] leading-tight uppercase italic">
+                  <p className={`text-3xl font-black leading-tight uppercase italic ${hoveredTeam === champion.name ? 'text-white' : 'text-[#002d62]'}`}>
                     {champion.name}
                   </p>
-                  <div className="inline-block mt-3 px-3 py-0.5 bg-[#002d62] rounded-full">
-                    <p className="text-white font-mono text-xs font-bold">SEED #{champion.seed}</p>
+                  <div className={`inline-block mt-3 px-3 py-0.5 rounded-full ${hoveredTeam === champion.name ? 'bg-white' : 'bg-[#002d62]'}`}>
+                    <p className={`font-mono text-xs font-bold ${hoveredTeam === champion.name ? 'text-red-600' : 'text-white'}`}>SEED #{champion.seed}</p>
                   </div>
                 </>
               ) : (

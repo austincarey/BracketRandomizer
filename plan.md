@@ -117,3 +117,24 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
 - [ ] **Deployment**
   - [x] Deploy initial site to Cloudflare.
   - [ ] Update with real teams when available (March 15, 2026).
+
+---
+
+## Ideas
+
+### Social & Sharing Features
+- **Unique URL Generation:** Save the bracket state to a simple database or encode it in the URL so users can share a direct link like `bracketrandomizer.com/b/XYZ123`.
+- **"Rate My Bracket":** A fun UI element that gives the generated bracket a "Chaos Score" based on the number of upsets (e.g., "98/100 Chaos - You've got a 16-seed in the Final Four!").
+
+### UX & Visual Polish
+- **Live Odds Display:** On hover, show the percentage chance that team had to win that specific game (e.g., "UMBC had a 1.2% chance to win this game").
+- **Enhanced Matchup Highlights:** Expand path highlighting to show more detailed stats on hover.
+
+### Comparison & Analysis Tools
+- **"The Expert vs. The RNG":** Allow users to manually pick a few games they are "sure" about, and let the Randomizer fill in the rest of the bracket.
+- **Bulk Simulation (The 100x Filter):** A feature to simulate 100 (or 1000) brackets at once and show statistics on which team won the most often in those simulations.
+
+### Monetization & Growth
+- **Ad Placement:** Add a small, non-intrusive ad unit (like Carbon Ads or a simple banner) below the bracket once it's generated.
+- **Newsletter/Reminder:** A "Remind me when the 2027 stats are live" email signup to build a returning user base.
+
