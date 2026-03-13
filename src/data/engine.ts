@@ -30,42 +30,29 @@ export const ROUND_NAMES = [
 const seedStats = seedStatsRaw as Record<string, number>;
 const teams2026 = teams2026Raw as Record<string, Team[]>;
 
-export function simulateMatchup(team1: Team, team2: Team, chaosFactor: number = 0): { winner: Team; prob1: number } {
+export function getWinProbability(team1: Team, team2: Team, chaosFactor: number = 0): number {
+  if (team1.seed === team2.seed) return 0.5;
+
   const higherSeed = Math.min(team1.seed, team2.seed);
   const lowerSeed = Math.max(team1.seed, team2.seed);
   
   const key = `${higherSeed}_vs_${lowerSeed}`;
   let winProb = seedStats[key] ?? 0.5; // Prob of higher seed beating lower seed
 
-  // Apply new chaos factor: 
-  // -1 = 100% Safe (choose historical favorite 100% of the time)
-  //  0 = Historical (use historical winProb)
-  //  1 = 100% Chaos (choose historical underdog 100% of the time)
-  
   if (chaosFactor < 0) {
-    // Towards "Safe" - interpolate towards the more likely winner
     const targetProb = winProb >= 0.5 ? 1.0 : 0.0;
     winProb = winProb + (targetProb - winProb) * Math.abs(chaosFactor);
   } else if (chaosFactor > 0) {
-    // Towards "Chaos" - interpolate towards the less likely winner
     const targetProb = winProb >= 0.5 ? 0.0 : 1.0;
     winProb = winProb + (targetProb - winProb) * chaosFactor;
   }
-  
-  const rng = Math.random();
 
-  let winner: Team;
-  let prob1: number; // Probability of team1 winning
+  return team1.seed === higherSeed ? winProb : (1 - winProb);
+}
 
-  if (team1.seed === team2.seed) {
-    prob1 = 0.5;
-    winner = rng < 0.5 ? team1 : team2;
-  } else {
-    // Determine probability for team1 specifically
-    prob1 = team1.seed === higherSeed ? winProb : (1 - winProb);
-    winner = rng < prob1 ? team1 : team2;
-  }
-
+export function simulateMatchup(team1: Team, team2: Team, chaosFactor: number = 0): { winner: Team; prob1: number } {
+  const prob1 = getWinProbability(team1, team2, chaosFactor);
+  const winner = Math.random() < prob1 ? team1 : team2;
   return { winner, prob1 };
 }
 
@@ -179,23 +166,24 @@ export function bulkSimulate(initialTeams: Team[], iterations: number = 100): Re
   return teamResults;
 }
 
-export function propagateOverride(rounds: Round[], roundIdx: number, matchupIdx: number, newWinner: Team): Round[] {
-  const newRounds = [...rounds];
+export function propagateOverride(rounds: Round[], roundIdx: number, matchupIdx: number, newWinner: Team, chaosFactor: number = 0): Round[] {
+  // Deep clone to avoid mutation
+  const newRounds: Round[] = JSON.parse(JSON.stringify(rounds));
   const oldWinner = newRounds[roundIdx].matchups[matchupIdx].winner;
   
   if (!oldWinner || oldWinner.name === newWinner.name) return rounds;
 
-  // Update the current matchup
-  newRounds[roundIdx].matchups[matchupIdx].winner = newWinner;
+  // Update current matchup
+  const currentMatchup = newRounds[roundIdx].matchups[matchupIdx];
+  currentMatchup.winner = newWinner;
+  // Re-calculate winProbability for current matchup as well, just in case
+  currentMatchup.winProbability = getWinProbability(currentMatchup.team1, currentMatchup.team2, chaosFactor);
 
-  // Propagate through future rounds
   let currentOldTeam = oldWinner;
   let currentNewTeam = newWinner;
 
   for (let r = roundIdx + 1; r < newRounds.length; r++) {
     const currentRoundMatchups = newRounds[r].matchups;
-
-    // Wait, simpler: just find where the old team was in the next round
     const affectedMatchup = currentRoundMatchups.find(m => 
       m.team1.name === currentOldTeam.name || m.team2.name === currentOldTeam.name
     );
@@ -207,12 +195,13 @@ export function propagateOverride(rounds: Round[], roundIdx: number, matchupIdx:
         affectedMatchup.team2 = currentNewTeam;
       }
 
-      // If the old team was the winner of this matchup too, propagate further
+      // Re-calculate probability for the NEW matchup
+      affectedMatchup.winProbability = getWinProbability(affectedMatchup.team1, affectedMatchup.team2, chaosFactor);
+
       if (affectedMatchup.winner?.name === currentOldTeam.name) {
         affectedMatchup.winner = currentNewTeam;
       } else {
-        // If they weren't the winner, propagation stops here for the winner property
-        // but we still updated the team slot.
+        // Stop propagating winner change if the old team wasn't winning this round
         break; 
       }
     } else {

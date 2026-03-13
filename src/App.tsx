@@ -61,7 +61,7 @@ function App() {
   };
 
   const handleOverride = (roundIdx: number, matchupIdx: number, newWinner: Team) => {
-    const updatedRounds = propagateOverride(rounds, roundIdx, matchupIdx, newWinner);
+    const updatedRounds = propagateOverride(rounds, roundIdx, matchupIdx, newWinner, chaosFactor);
     setRounds(updatedRounds);
     // If bulk results exist, they are now slightly "stale" but we'll leave them for now
     // or we could clear them. Let's clear them to avoid confusion.
