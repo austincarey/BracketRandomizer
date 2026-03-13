@@ -326,7 +326,7 @@ function App() {
       </main>
 
       <footer className="mt-20 py-8 border-t border-slate-200 text-center text-slate-400">
-        <p>&copy; 2026 BracketRandomizer.com. All rights reserved.</p>
+        <p>&copy; 2026 Austin Carey / BracketRandomizer.com. All rights reserved.</p>
       </footer>
     </div>
   )
