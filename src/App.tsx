@@ -7,9 +7,11 @@ import {
   getInitialMatchups,
   calculateChaosScore,
   bulkSimulate,
+  propagateOverride,
   Round, 
   Matchup, 
-  ROUND_NAMES 
+  ROUND_NAMES,
+  Team
 } from './data/engine'
 import { encodeBracket, decodeBracket } from './data/share'
 import BracketView from './components/BracketView'
@@ -56,6 +58,14 @@ function App() {
   const runBulkSim = () => {
     const results = bulkSimulate(initialTeams, 1000);
     setBulkResults(results);
+  };
+
+  const handleOverride = (roundIdx: number, matchupIdx: number, newWinner: Team) => {
+    const updatedRounds = propagateOverride(rounds, roundIdx, matchupIdx, newWinner);
+    setRounds(updatedRounds);
+    // If bulk results exist, they are now slightly "stale" but we'll leave them for now
+    // or we could clear them. Let's clear them to avoid confusion.
+    setBulkResults(null);
   };
 
   const copyShareLink = async () => {
@@ -315,7 +325,12 @@ function App() {
         {rounds.length > 0 ? (
           <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide flex justify-center lg:justify-start">
             <div className="inline-block mx-auto min-w-min">
-              <BracketView rounds={rounds} bulkResults={bulkResults} />
+              <BracketView 
+                rounds={rounds} 
+                bulkResults={bulkResults} 
+                onOverride={handleOverride}
+                isComplete={isComplete}
+              />
             </div>
           </div>
         ) : (

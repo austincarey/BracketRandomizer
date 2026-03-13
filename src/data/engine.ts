@@ -178,3 +178,51 @@ export function bulkSimulate(initialTeams: Team[], iterations: number = 100): Re
 
   return teamResults;
 }
+
+export function propagateOverride(rounds: Round[], roundIdx: number, matchupIdx: number, newWinner: Team): Round[] {
+  const newRounds = [...rounds];
+  const oldWinner = newRounds[roundIdx].matchups[matchupIdx].winner;
+  
+  if (!oldWinner || oldWinner.name === newWinner.name) return rounds;
+
+  // Update the current matchup
+  newRounds[roundIdx].matchups[matchupIdx].winner = newWinner;
+
+  // Propagate through future rounds
+  let currentOldTeam = oldWinner;
+  let currentNewTeam = newWinner;
+
+  for (let r = roundIdx + 1; r < newRounds.length; r++) {
+    const prevRoundMatchups = newRounds[r - 1].matchups;
+    const currentRoundMatchups = newRounds[r].matchups;
+
+    // Each game in round R is formed by winners of two specific games in round R-1
+    // Game i in round R is winners of game 2i and 2i+1 in round R-1
+    const nextMatchupIdx = Math.floor(matchupIdx / Math.pow(2, r - roundIdx));
+    // Wait, simpler: just find where the old team was in the next round
+    const affectedMatchup = currentRoundMatchups.find(m => 
+      m.team1.name === currentOldTeam.name || m.team2.name === currentOldTeam.name
+    );
+
+    if (affectedMatchup) {
+      if (affectedMatchup.team1.name === currentOldTeam.name) {
+        affectedMatchup.team1 = currentNewTeam;
+      } else {
+        affectedMatchup.team2 = currentNewTeam;
+      }
+
+      // If the old team was the winner of this matchup too, propagate further
+      if (affectedMatchup.winner?.name === currentOldTeam.name) {
+        affectedMatchup.winner = currentNewTeam;
+      } else {
+        // If they weren't the winner, propagation stops here for the winner property
+        // but we still updated the team slot.
+        break; 
+      }
+    } else {
+      break;
+    }
+  }
+
+  return newRounds;
+}

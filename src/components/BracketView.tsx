@@ -1,20 +1,25 @@
 import React, { useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
-import { Round, Matchup, ROUND_NAMES } from '../data/engine';
+import { Round, Matchup, ROUND_NAMES, Team } from '../data/engine';
 
 interface BracketViewProps {
   rounds: Round[];
   bulkResults?: Record<string, number[]> | null;
+  onOverride?: (roundIdx: number, matchupIdx: number, newWinner: Team) => void;
+  isComplete?: boolean;
 }
 
 const MatchupCard: React.FC<{ 
   matchup: Matchup; 
   roundIdx: number;
+  matchupIdx: number;
   hoveredTeam: string | null; 
   onHover: (name: string | null) => void;
   bulkResults?: Record<string, number[]> | null;
-}> = ({ matchup, roundIdx, hoveredTeam, onHover, bulkResults }) => {
+  onOverride?: (roundIdx: number, matchupIdx: number, newWinner: Team) => void;
+  isComplete?: boolean;
+}> = ({ matchup, roundIdx, matchupIdx, hoveredTeam, onHover, bulkResults, onOverride, isComplete }) => {
   const p1 = matchup.winProbability ? Math.round(matchup.winProbability * 100) : (matchup.winner ? (matchup.winner === matchup.team1 ? 100 : 0) : 50);
   const p2 = 100 - p1;
 
@@ -33,14 +38,18 @@ const MatchupCard: React.FC<{
   const t1Bulk = getBulkWinPct(matchup.team1.name);
   const t2Bulk = getBulkWinPct(matchup.team2.name);
 
+  const canOverrideT1 = isComplete && matchup.winner && !isT1Winner;
+  const canOverrideT2 = isComplete && matchup.winner && !isT2Winner;
+
   return (
     <div className="flex flex-col w-52 border border-slate-300 overflow-hidden bg-white shadow-sm transition-all duration-200">
       <div 
         onMouseEnter={() => onHover(matchup.team1.name)}
         onMouseLeave={() => onHover(null)}
-        className={`px-3 py-1.5 border-b border-slate-200 flex justify-between items-center cursor-default transition-colors ${
+        onClick={() => canOverrideT1 && onOverride?.(roundIdx, matchupIdx, matchup.team1)}
+        className={`px-3 py-1.5 border-b border-slate-200 flex justify-between items-center transition-colors relative group ${
           isT1Hovered ? 'bg-red-600 text-white' : (isT1Winner ? 'bg-slate-100 font-bold' : (matchup.winner ? 'text-slate-400' : 'text-slate-800'))
-        }`}
+        } ${canOverrideT1 ? 'cursor-pointer hover:bg-red-50' : 'cursor-default'}`}
       >
         <div className="flex items-center flex-1 truncate">
           <span className={`text-[10px] font-bold mr-2 w-4 ${isT1Hovered ? 'text-white/80' : 'text-slate-500'}`}>{matchup.team1.seed}</span>
@@ -50,13 +59,19 @@ const MatchupCard: React.FC<{
           <span className={`text-[9px] font-bold ${isT1Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p1}%</span>
           {t1Bulk && <span className="text-[7px] font-black text-purple-600">{t1Bulk} sim</span>}
         </div>
+        {canOverrideT1 && (
+          <div className="absolute inset-0 bg-red-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[8px] font-black uppercase tracking-widest">Override Winner?</span>
+          </div>
+        )}
       </div>
       <div 
         onMouseEnter={() => onHover(matchup.team2.name)}
         onMouseLeave={() => onHover(null)}
-        className={`px-3 py-1.5 flex justify-between items-center cursor-default transition-colors ${
+        onClick={() => canOverrideT2 && onOverride?.(roundIdx, matchupIdx, matchup.team2)}
+        className={`px-3 py-1.5 flex justify-between items-center transition-colors relative group ${
           isT2Hovered ? 'bg-red-600 text-white' : (isT2Winner ? 'bg-slate-100 font-bold' : (matchup.winner ? 'text-slate-400' : 'text-slate-800'))
-        }`}
+        } ${canOverrideT2 ? 'cursor-pointer hover:bg-red-50' : 'cursor-default'}`}
       >
         <div className="flex items-center flex-1 truncate">
           <span className={`text-[10px] font-bold mr-2 w-4 ${isT2Hovered ? 'text-white/80' : 'text-slate-500'}`}>{matchup.team2.seed}</span>
@@ -66,6 +81,11 @@ const MatchupCard: React.FC<{
           <span className={`text-[9px] font-bold ${isT2Hovered ? 'text-white/60' : 'text-slate-400'}`}>{p2}%</span>
           {t2Bulk && <span className="text-[7px] font-black text-purple-600">{t2Bulk} sim</span>}
         </div>
+        {canOverrideT2 && (
+          <div className="absolute inset-0 bg-red-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[8px] font-black uppercase tracking-widest">Override Winner?</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -77,7 +97,7 @@ const PlaceholderCard: React.FC = () => (
   </div>
 );
 
-const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults }) => {
+const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverride, isComplete }) => {
   const bracketRef = useRef<HTMLDivElement>(null);
   const [hoveredTeam, setHoveredTeam] = React.useState<string | null>(null);
 
@@ -111,7 +131,7 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults }) => {
     
     const start = regionIndex * matchupsPerRegion;
     const end = (regionIndex + 1) * matchupsPerRegion;
-    return rounds[roundIndex].matchups.slice(start, end);
+    return rounds[roundIndex].matchups.slice(start, end).map((m, i) => ({ ...m, originalIdx: start + i }));
   };
 
   const RegionSection = ({ regionIndex, title, side }: { regionIndex: number, title: string, side: 'left' | 'right' }) => (
@@ -131,14 +151,17 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults }) => {
               </span>
               <div className="flex flex-col justify-around h-full gap-2">
                 {matchups.length > 0 ? (
-                  matchups.map((m, mIdx) => (
+                  matchups.map((m: any, mIdx) => (
                     <MatchupCard 
                       key={mIdx} 
                       matchup={m} 
                       roundIdx={rIdx}
+                      matchupIdx={m.originalIdx}
                       hoveredTeam={hoveredTeam} 
                       onHover={setHoveredTeam} 
                       bulkResults={bulkResults}
+                      onOverride={onOverride}
+                      isComplete={isComplete}
                     />
                   ))
                 ) : (
@@ -189,12 +212,12 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults }) => {
                </div>
                <div className="flex gap-6">
                  {finalFourMatchups[0] ? (
-                   <MatchupCard matchup={finalFourMatchups[0]} roundIdx={4} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} />
+                   <MatchupCard matchup={finalFourMatchups[0]} roundIdx={4} matchupIdx={0} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} onOverride={onOverride} isComplete={isComplete} />
                  ) : (
                    <PlaceholderCard />
                  )}
                  {finalFourMatchups[1] ? (
-                   <MatchupCard matchup={finalFourMatchups[1]} roundIdx={4} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} />
+                   <MatchupCard matchup={finalFourMatchups[1]} roundIdx={4} matchupIdx={1} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} onOverride={onOverride} isComplete={isComplete} />
                  ) : (
                    <PlaceholderCard />
                  )}
@@ -206,7 +229,7 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults }) => {
                     <h3 className="font-black italic uppercase text-[12px] tracking-widest">Championship</h3>
                </div>
                {championshipMatchup ? (
-                 <MatchupCard matchup={championshipMatchup} roundIdx={5} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} />
+                 <MatchupCard matchup={championshipMatchup} roundIdx={5} matchupIdx={0} hoveredTeam={hoveredTeam} onHover={setHoveredTeam} bulkResults={bulkResults} onOverride={onOverride} isComplete={isComplete} />
                ) : (
                  <PlaceholderCard />
                )}
