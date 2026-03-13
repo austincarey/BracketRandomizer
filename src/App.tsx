@@ -191,8 +191,10 @@ function App() {
         )}
 
         {rounds.length > 0 ? (
-          <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide">
-            <BracketView rounds={rounds} />
+          <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide flex justify-center lg:justify-start">
+            <div className="inline-block mx-auto min-w-min">
+              <BracketView rounds={rounds} />
+            </div>
           </div>
         ) : (
           <div className="bg-gray-800 rounded-3xl p-8 md:p-12 border border-gray-700 min-h-[300px] md:min-h-[400px] flex items-center justify-center">
