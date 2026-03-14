@@ -340,8 +340,30 @@ function App() {
         )}
       </main>
 
-      <footer className="mt-20 py-8 border-t border-slate-200 text-center text-slate-400">
-        <p>&copy; 2026 Austin Carey / BracketRandomizer.com. All rights reserved.</p>
+      <footer className="mt-20 py-12 border-t border-slate-200 text-center text-slate-400">
+        <div className="mb-6">
+          <a
+            href="mailto:info@bracketrandomizer.com"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-50 text-[#002d62] font-bold rounded-full transition-all border border-slate-200 text-sm shadow-sm hover:shadow-md active:scale-95"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            Contact us
+          </a>
+        </div>
+        <p className="text-xs md:text-sm font-medium">&copy; 2026 Austin Carey / BracketRandomizer.com. All rights reserved.</p>
       </footer>
     </div>
   )
