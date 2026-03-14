@@ -126,14 +126,18 @@ export function simulateTournament(initialTeams: Team[], chaosFactor: number = 0
 }
 
 export function calculateChaosScore(rounds: Round[]): number {
-  let totalProbability = 0;
+  let totalUnlikeliness = 0;
   let maxMatchups = 0;
 
   rounds.forEach(round => {
     round.matchups.forEach(matchup => {
-      if (matchup.winner && matchup.winProbability !== undefined) {
-        const winProb = matchup.winner === matchup.team1 ? matchup.winProbability : (1 - matchup.winProbability);
-        totalProbability += (1 - winProb);
+      if (matchup.winner) {
+        // Always calculate "chaos" based on historical baseline (chaosFactor = 0)
+        const historicalProb1 = getWinProbability(matchup.team1, matchup.team2, 0);
+        const winnerProb = matchup.winner === matchup.team1 ? historicalProb1 : (1 - historicalProb1);
+        
+        // Unlikeliness is 1 - the historical probability of that team winning
+        totalUnlikeliness += (1 - winnerProb);
         maxMatchups++;
       }
     });
@@ -141,7 +145,8 @@ export function calculateChaosScore(rounds: Round[]): number {
 
   if (maxMatchups === 0) return 0;
   
-  return Math.round((totalProbability / maxMatchups) * 200); 
+  // Normalize to 0-100 scale based on average unlikeliness
+  return Math.round((totalUnlikeliness / maxMatchups) * 100); 
 }
 
 export function bulkSimulate(initialTeams: Team[], iterations: number = 100): Record<string, number[]> {

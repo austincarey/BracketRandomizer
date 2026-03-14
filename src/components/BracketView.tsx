@@ -38,8 +38,8 @@ const MatchupCard: React.FC<{
   const t1Bulk = getBulkWinPct(matchup.team1.name);
   const t2Bulk = getBulkWinPct(matchup.team2.name);
 
-  const canOverrideT1 = isComplete && matchup.winner && !isT1Winner;
-  const canOverrideT2 = isComplete && matchup.winner && !isT2Winner;
+  const canOverrideT1 = matchup.winner && !isT1Winner;
+  const canOverrideT2 = matchup.winner && !isT2Winner;
 
   return (
     <div className="flex flex-col w-52 border border-slate-300 overflow-hidden bg-white shadow-sm transition-all duration-200">
