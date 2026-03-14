@@ -19,7 +19,7 @@ const MatchupCard: React.FC<{
   bulkResults?: Record<string, number[]> | null;
   onOverride?: (roundIdx: number, matchupIdx: number, newWinner: Team) => void;
   isComplete?: boolean;
-}> = ({ matchup, roundIdx, matchupIdx, hoveredTeam, onHover, bulkResults, onOverride, isComplete }) => {
+}> = ({ matchup, roundIdx, matchupIdx, hoveredTeam, onHover, bulkResults, onOverride }) => {
   const p1 = matchup.winProbability ? Math.round(matchup.winProbability * 100) : (matchup.winner ? (matchup.winner === matchup.team1 ? 100 : 0) : 50);
   const p2 = 100 - p1;
 

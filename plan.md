@@ -122,6 +122,15 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
     - [x] Live Odds display for every matchup.
     - [x] Manual Override propagation (Click a loser to make them the winner).
     - [x] Custom BRACKETRANDOMIZER.COM watermark in middle of bracket.
+    - [x] Add "Contact us" button with email link in footer.
+- [ ] **SEO Optimization Phase**
+  - [x] Add High-Value Meta Tags (Title, Description, Canonical).
+  - [x] Add Open Graph & Twitter Card tags.
+  - [x] Create `robots.txt` and `sitemap.xml`.
+  - [x] Generate and add custom favicon.
+  - [x] Add semantic "About / How it Works" text to the landing page.
+  - [ ] Add an Open Graph preview image (`og-image.jpg`).
+  - [ ] Set up Google Search Console verification.
 - [ ] **Final Deployment Phase**
   - [x] Deploy initial site to Cloudflare.
   - [ ] Update with real teams when available (March 15, 2026).

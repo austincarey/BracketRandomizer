@@ -1,43 +1,50 @@
 # GEMINI.md - Bracket Randomizer
 
-This document provides instructional context for the Bracket Randomizer project, an automated NCAA March Madness bracket generator for the 2026 tournament.
+This document provides foundational context and instructions for the Bracket Randomizer project, an automated NCAA March Madness bracket generator for the 2026 tournament.
 
 ## Project Overview
 
-The **Bracket Randomizer** is a web-based application designed to create statistically accurate NCAA tournament brackets. Instead of simple coin-flips, the simulation uses historical "seed vs. seed" win percentages to determine winners via a random number generator (RNG).
+**Bracket Randomizer** is a functional web application that generates statistically accurate NCAA tournament brackets using historical "seed vs. seed" win percentages (sourced from [mcubed.net](https://mcubed.net/ncaab/seeds.shtml)).
 
-### Core Goals:
-- **Statistical Accuracy:** Pull historical seed matchup data from [mcubed.net](https://mcubed.net/ncaab/seeds.shtml).
-- **RNG Simulation:** For any matchup (e.g., #1 vs #16), if the #16 seed historically has a 1% win rate, generate a number between 1-100; if <1, the #16 seed wins.
-- **Dynamic 2026 Data:** Incorporate actual 2026 tournament teams once they are announced.
-- **Visual & Interactive UI:** A landing page featuring an empty bracket that fills dynamically upon clicking a "Randomize Bracket" button.
-- **Exportability:** Generate a watermark-protected image or PDF of the completed bracket.
-- **Monetization:** Include a Ko-fi link for donations.
+### Core Features:
+- **Statistical RNG Simulation:** Uses historical data for any matchup (e.g., #1 vs #16) to determine winners.
+- **Interactive Bracket UI:** A React-based visualization of the tournament bracket with path highlighting.
+- **Advanced Simulation Modes:**
+  - **Chaos Factor:** Adjust simulation to favor favorites or underdogs.
+  - **Round-by-Round:** Progress through the tournament one round at a time.
+  - **Bulk Simulation:** Run 1000x simulations to see statistical overlays on matchups.
+- **Chaos Score:** Calculates a "chaos" rating for generated brackets based on the historical unlikeliness of results.
+- **Manual Overrides:** Users can click on any team to force them as a winner; changes propagate automatically.
+- **Export & Sharing:**
+  - Save brackets as watermark-protected PNG images or PDFs.
+  - Shareable bracket URLs using Base64-encoded bitstrings.
+- **Monetization:** Integrated Ko-fi donation link.
 
-### Intended Architecture:
-- **Frontend:** Likely a modern web framework (React, Vue, or Vanilla JS) to handle the bracket visualization.
-- **Hosting:** Cloudflare (BracketRandomizer.com).
-- **Version Control:** [github.com/austincarey/BracketRandomizer](https://github.com/austincarey/BracketRandomizer).
+## Architecture & Tech Stack
 
-## Building and Running
+- **Frontend:** React 18 with Vite (TypeScript).
+- **Styling:** Tailwind CSS with `tailwind-merge` and `clsx`.
+- **Logic:** Custom simulation engine (`engine.ts`) using historical JSON stats.
+- **Exporting:** `html-to-image` and `jspdf`.
+- **Hosting/Deployment:** Cloudflare Pages (BracketRandomizer.com) managed via `wrangler`.
+- **Testing:** Vitest for engine logic and component testing.
 
-*Note: The project is currently in the initial planning phase. No code has been committed yet.*
+## Project State: Prototype/MVP Complete
 
-- **TODO:** Initialize the web project (e.g., `npm init` or similar).
-- **TODO:** Implement the data scraping or fetching logic for `mcubed.net`.
-- **TODO:** Create the randomization script.
-- **TODO:** Build the UI and export functionality.
+The core application is fully functional and deployed. Remaining work primarily involves updating the `teams_2026.json` data once the official field is announced on Selection Sunday (March 15, 2026).
 
 ## Development Conventions
 
-- **Shell Environment:** This project is typically developed in **Windows PowerShell**. Ensure shell commands use PowerShell syntax (e.g., use `;` instead of `&&` for command chaining).
-- **Planning:** Maintain a `plan.md` file to track infrastructure setup, data scripts, and UI progress.
-- **Tracking:** Use the `plan.md` to keep a live TODO list, noting completed items and upcoming tasks.
-- **Branding:** All exported brackets must include a `bracketrandomizer.com` watermark.
-- **Documentation:** Provide clear instructions for Cloudflare deployment and team data updates.
+- **Shell Environment:** Developed in **Windows PowerShell**. Use PowerShell syntax for command chaining (e.g., `;` instead of `&&`).
+- **Planning:** Refer to `plan.md` for the detailed roadmap and task tracking.
+- **Branding:** All exported assets must feature the `bracketrandomizer.com` watermark.
+- **Verification:** Always run `npm run build` and `npm run test` (if applicable) before deploying.
 
-## Key Files (Proposed)
-- `plan.md`: The roadmap and task tracker.
-- `src/`: Directory for application source code.
-- `data/`: Stored seed win percentages and team listings.
-- `scripts/`: Data fetching and simulation logic.
+## Key Files
+- `plan.md`: The roadmap and progress tracker.
+- `src/data/engine.ts`: Core simulation and override logic.
+- `src/data/seed_stats.json`: Historical seed matchup win percentages.
+- `src/data/teams_2026.json`: Placeholder for tournament teams.
+- `src/components/BracketView.tsx`: Main UI component for the bracket.
+- `scripts/scrape_stats.py`: Python script for refreshing `seed_stats.json` from mcubed.net.
+- `wrangler.jsonc`: Cloudflare configuration.

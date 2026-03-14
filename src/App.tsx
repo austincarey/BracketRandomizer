@@ -15,6 +15,7 @@ import {
 } from './data/engine'
 import { encodeBracket, decodeBracket } from './data/share'
 import BracketView from './components/BracketView'
+import NewsletterSignup from './components/NewsletterSignup'
 import './App.css'
 
 function App() {
@@ -339,6 +340,18 @@ function App() {
           </div>
         )}
       </main>
+
+      <div className="max-w-4xl mx-auto mt-20 text-left px-4">
+        <h2 className="text-2xl font-black mb-4">About Bracket Randomizer</h2>
+        <p className="text-slate-600 mb-4 leading-relaxed">
+          The <strong>NCAA March Madness Bracket Randomizer</strong> is a statistically accurate generator designed to help you create the perfect college basketball tournament bracket. Unlike simple coin-flip generators, our engine uses decades of historical <strong>seed vs. seed win percentages</strong> to determine the outcome of every matchup. Whether it's a 1-seed dominating a 16-seed or a classic 5 vs. 12 upset, the probabilities are rooted in real tournament history.
+        </p>
+        <p className="text-slate-600 leading-relaxed">
+          Use the <em>Chaos Engine</em> to tweak the randomness—crank it up to see wild Cinderella runs to the Final Four, or keep it safe with the heavy favorites. Generate a bracket instantly, simulate game-by-game, or run 1000x bulk simulations to see the mathematical odds for your favorite teams to cut down the nets in 2026.
+        </p>
+      </div>
+
+      <NewsletterSignup />
 
       <footer className="mt-20 py-12 border-t border-slate-200 text-center text-slate-400">
         <div className="mb-6">
