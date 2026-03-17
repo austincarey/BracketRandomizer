@@ -113,12 +113,24 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
   const exportAsPDF = async () => {
     if (!bracketRef.current) return;
     const dataUrl = await toPng(bracketRef.current, { backgroundColor: '#ffffff', pixelRatio: 2 });
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    const imgProps = pdf.getImageProperties(dataUrl);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('bracket-randomizer.pdf');
+    const imgProps = new Image();
+    imgProps.src = dataUrl;
+    imgProps.onload = () => {
+      // Use the actual pixel dimensions for the PDF to avoid scaling issues
+      // Convert pixels to mm (assuming 96 DPI, 1px = 0.264583mm)
+      const pxToMm = 0.264583;
+      const widthMm = imgProps.width * pxToMm;
+      const heightMm = imgProps.height * pxToMm;
+      
+      const pdf = new jsPDF({
+        orientation: widthMm > heightMm ? 'l' : 'p',
+        unit: 'mm',
+        format: [widthMm, heightMm]
+      });
+      
+      pdf.addImage(dataUrl, 'PNG', 0, 0, widthMm, heightMm);
+      pdf.save('bracket-randomizer.pdf');
+    };
   };
 
   if (rounds.length === 0) return null;
