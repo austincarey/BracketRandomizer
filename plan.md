@@ -133,7 +133,7 @@ Once the website code is ready (likely in a `dist/` or `build/` folder):
   - [ ] Set up Google Search Console verification.
 - [ ] **Final Deployment Phase**
   - [x] Deploy initial site to Cloudflare.
-  - [ ] Update with real teams when available (March 15, 2026).
+  - [x] Update with real teams when available (March 15, 2026).
 
 ---
 
