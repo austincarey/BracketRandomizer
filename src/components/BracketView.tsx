@@ -103,7 +103,23 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
 
   const exportAsImage = async () => {
     if (!bracketRef.current) return;
-    const dataUrl = await toPng(bracketRef.current, { backgroundColor: '#ffffff', pixelRatio: 2 });
+    const width = bracketRef.current.scrollWidth;
+    const height = bracketRef.current.scrollHeight;
+    
+    const dataUrl = await toPng(bracketRef.current, { 
+      backgroundColor: '#ffffff', 
+      pixelRatio: 2,
+      width: width,
+      height: height,
+      style: {
+        transform: 'none',
+        margin: '0',
+        padding: '0',
+        left: '0',
+        top: '0',
+      }
+    });
+    
     const link = document.createElement('a');
     link.download = 'bracket-randomizer.png';
     link.href = dataUrl;
@@ -112,15 +128,30 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
 
   const exportAsPDF = async () => {
     if (!bracketRef.current) return;
-    const dataUrl = await toPng(bracketRef.current, { backgroundColor: '#ffffff', pixelRatio: 2 });
+    
+    const width = bracketRef.current.scrollWidth;
+    const height = bracketRef.current.scrollHeight;
+
+    const dataUrl = await toPng(bracketRef.current, { 
+      backgroundColor: '#ffffff', 
+      pixelRatio: 2,
+      width: width,
+      height: height,
+      style: {
+        transform: 'none',
+        margin: '0',
+        padding: '0',
+        left: '0',
+        top: '0',
+      }
+    });
+
     const imgProps = new Image();
     imgProps.src = dataUrl;
     imgProps.onload = () => {
-      // Use the actual pixel dimensions for the PDF to avoid scaling issues
-      // Convert pixels to mm (assuming 96 DPI, 1px = 0.264583mm)
       const pxToMm = 0.264583;
-      const widthMm = imgProps.width * pxToMm;
-      const heightMm = imgProps.height * pxToMm;
+      const widthMm = imgProps.width * pxToMm / 2; // Divide by 2 because pixelRatio was 2
+      const heightMm = imgProps.height * pxToMm / 2;
       
       const pdf = new jsPDF({
         orientation: widthMm > heightMm ? 'l' : 'p',
