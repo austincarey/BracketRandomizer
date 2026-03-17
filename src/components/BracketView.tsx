@@ -103,55 +103,39 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
 
   const exportAsImage = async () => {
     if (!bracketRef.current) return;
-    const width = bracketRef.current.scrollWidth;
-    const height = bracketRef.current.scrollHeight;
     
-    const dataUrl = await toPng(bracketRef.current, { 
-      backgroundColor: '#ffffff', 
-      pixelRatio: 2,
-      width: width,
-      height: height,
-      style: {
-        transform: 'none',
-        margin: '0',
-        padding: '0',
-        left: '0',
-        top: '0',
-      }
-    });
-    
-    const link = document.createElement('a');
-    link.download = 'bracket-randomizer.png';
-    link.href = dataUrl;
-    link.click();
+    try {
+      const dataUrl = await toPng(bracketRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+      });
+      
+      const link = document.createElement('a');
+      link.download = 'bracket-randomizer.png';
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Export PNG failed:', err);
+    }
   };
 
   const exportAsPDF = async () => {
     if (!bracketRef.current) return;
-    
-    const width = bracketRef.current.scrollWidth;
-    const height = bracketRef.current.scrollHeight;
 
-    const dataUrl = await toPng(bracketRef.current, { 
-      backgroundColor: '#ffffff', 
-      pixelRatio: 2,
-      width: width,
-      height: height,
-      style: {
-        transform: 'none',
-        margin: '0',
-        padding: '0',
-        left: '0',
-        top: '0',
-      }
-    });
+    try {
+      const dataUrl = await toPng(bracketRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+      });
 
-    const imgProps = new Image();
-    imgProps.src = dataUrl;
-    imgProps.onload = () => {
+      const width = bracketRef.current.clientWidth;
+      const height = bracketRef.current.clientHeight;
+      
       const pxToMm = 0.264583;
-      const widthMm = imgProps.width * pxToMm / 2; // Divide by 2 because pixelRatio was 2
-      const heightMm = imgProps.height * pxToMm / 2;
+      const widthMm = width * pxToMm;
+      const heightMm = height * pxToMm;
       
       const pdf = new jsPDF({
         orientation: widthMm > heightMm ? 'l' : 'p',
@@ -161,7 +145,9 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
       
       pdf.addImage(dataUrl, 'PNG', 0, 0, widthMm, heightMm);
       pdf.save('bracket-randomizer.pdf');
-    };
+    } catch (err) {
+      console.error('Export PDF failed:', err);
+    }
   };
 
   if (rounds.length === 0) return null;
