@@ -105,10 +105,22 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
     if (!bracketRef.current) return;
     
     try {
-      const dataUrl = await toPng(bracketRef.current, {
+      const node = bracketRef.current;
+      const width = node.scrollWidth;
+      const height = node.scrollHeight;
+
+      const dataUrl = await toPng(node, {
         cacheBust: true,
         pixelRatio: 2,
         backgroundColor: '#ffffff',
+        width: width,
+        height: height,
+        style: {
+          transform: 'scale(1)',
+          margin: '0',
+          left: '0',
+          top: '0',
+        }
       });
       
       const link = document.createElement('a');
@@ -124,15 +136,24 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
     if (!bracketRef.current) return;
 
     try {
-      const dataUrl = await toPng(bracketRef.current, {
+      const node = bracketRef.current;
+      const width = node.scrollWidth;
+      const height = node.scrollHeight;
+
+      const dataUrl = await toPng(node, {
         cacheBust: true,
         pixelRatio: 2,
         backgroundColor: '#ffffff',
+        width: width,
+        height: height,
+        style: {
+          transform: 'scale(1)',
+          margin: '0',
+          left: '0',
+          top: '0',
+        }
       });
 
-      const width = bracketRef.current.clientWidth;
-      const height = bracketRef.current.clientHeight;
-      
       const pxToMm = 0.264583;
       const widthMm = width * pxToMm;
       const heightMm = height * pxToMm;
@@ -219,7 +240,7 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
         </button>
       </div>
 
-      <div ref={bracketRef} className="p-8 bg-white border border-slate-200 rounded-xl min-w-max relative shadow-2xl overflow-hidden">
+      <div ref={bracketRef} className="p-8 bg-white border border-slate-200 rounded-xl min-w-max relative shadow-2xl">
         {/* Header Bar like the 2023 image */}
         <div className="absolute top-0 left-0 right-0 h-12 bg-[#002d62] flex items-center px-8 justify-between">
             <h1 className="text-white font-black italic tracking-tighter text-xl">
@@ -231,7 +252,7 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
         <div className="relative z-10 flex items-center gap-12 mt-12">
           <div className="flex flex-col gap-12">
             <RegionSection regionIndex={0} title="East" side="left" />
-            <RegionSection regionIndex={1} title="West" side="left" />
+            <RegionSection regionIndex={1} title="South" side="left" />
           </div>
 
           <div className="flex flex-col items-center gap-8 py-10">
@@ -299,7 +320,7 @@ const BracketView: React.FC<BracketViewProps> = ({ rounds, bulkResults, onOverri
           </div>
 
           <div className="flex flex-col gap-12">
-            <RegionSection regionIndex={2} title="South" side="right" />
+            <RegionSection regionIndex={2} title="West" side="right" />
             <RegionSection regionIndex={3} title="Midwest" side="right" />
           </div>
         </div>

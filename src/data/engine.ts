@@ -57,7 +57,7 @@ export function simulateMatchup(team1: Team, team2: Team, chaosFactor: number = 
 }
 
 export function generateInitialTeams(): Team[] {
-  const regions = ['East', 'West', 'South', 'Midwest'];
+  const regions = ['East', 'South', 'West', 'Midwest'];
   const teams: Team[] = [];
   
   regions.forEach(region => {
